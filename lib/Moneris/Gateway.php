@@ -15,7 +15,7 @@ class Moneris_Gateway
 	 * Codes that we're willing to accept for AVS.
 	 * @var array
 	 */
-	protected $_successful_avs_codes = array('A','B', 'D', 'M', 'P', 'W', 'X', 'Y', 'Z');
+	protected $_successful_avs_codes = array('A','B','C','D','E','F','G','I','K','L','M','N','O','P','R','S','T','U','W','X','Y','Z');
 
 	/**
 	 * Codes that we're willing to accept for CVD.
