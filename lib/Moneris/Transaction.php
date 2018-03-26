@@ -155,7 +155,29 @@ class Moneris_Transaction
 					if (! isset($params['order_id'])) $errors[] = 'Order ID not provided';
 					if (! isset($params['amount'])) $errors[] = 'Amount not provided';
 					break;
+					
+				case 'res_card_verification_cc':
 
+					if (! isset($params['order_id'])) $errors[] = 'Order ID not provided';
+					if (! isset($params['data_key']) || '' == $params['data_key']) $errors[] = 'Data key not provided';
+
+					if ($this->gateway()->check_avs()) {
+
+						if (! isset($params['avs_street_number'])) $errors[] = 'Street number not provided';
+						if (! isset($params['avs_street_name'])) $errors[] = 'Street name not provided';
+						if (! isset($params['avs_zipcode'])) $errors[] = 'Zip/postal code not provided';
+
+						//@TODO email is Amex/JCB only...
+						//if (! isset($params['avs_email'])) $errors[] = 'Email not provided';
+
+					}
+
+					if ($this->gateway()->check_cvd()) {
+						if (! isset($params['cvd'])) $errors[] = 'CVD not provided';
+					}
+
+					break;
+	
 				case 'res_update_cc':
 					if (! isset($params['data_key']) || '' == $params['data_key']) $errors[] = 'Data key not provided';
 					break;
