@@ -476,7 +476,7 @@ class Moneris_Gateway
 	 */
 	public function verify(array $params)
 	{
-		$params['type'] = 'card_verification';
+	        $params['type'] = (isset($params['data_key'])) ? 'res_card_verification_cc' : 'card_verification';
 		$params['crypt_type'] = 7;
 		$transaction = $this->transaction($params);
 	 	return $this->_process($transaction);
