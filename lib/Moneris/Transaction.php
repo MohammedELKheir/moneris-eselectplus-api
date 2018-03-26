@@ -315,7 +315,7 @@ class Moneris_Transaction
 		$xml->addChild('api_token', $gateway->api_key());
 
 		$type = $xml->addChild($params['type']);
-		$type_allows_efraud = in_array($params['type'], array('purchase', 'res_purchase_cc', 'preauth', 'card_verification', 'cavv_purchase', 'cavv_preauth'));
+		$type_allows_efraud = in_array($params['type'], array('purchase', 'res_purchase_cc', 'res_add_token', 'preauth', 'res_preauth_cc', 'card_verification', 'res_card_verification_cc', 'cavv_purchase', 'cavv_preauth'));
 		// prevent type from being included below when we all all of the optional params:
 		unset($params['type']);
 
