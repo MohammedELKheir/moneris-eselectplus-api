@@ -121,7 +121,7 @@ class Moneris_Gateway
 	 * @param string $order_id Required if first param isn't an instance of Moneris_Transation
 	 * @return void
 	 */
-	public function capture($transaction_number, $order_id = null, $amount = null)
+	public function capture($transaction_number, $order_id = null, $amount = null, $customerId = null)
 	{
 		if ($transaction_number instanceof Moneris_Transaction) {
 			$order_id = $transaction_number->order_id();
@@ -131,6 +131,7 @@ class Moneris_Gateway
 		// these have to be in this order!
 		$params = array(
 			'type' => 'completion',
+                        'cust_id' => $customerId,
 			'order_id' => $order_id,
 			'comp_amount' => $amount,
 			'txn_number' => $transaction_number,
