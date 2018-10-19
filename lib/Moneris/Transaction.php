@@ -156,6 +156,28 @@ class Moneris_Transaction
 					if (! isset($params['amount'])) $errors[] = 'Amount not provided';
 					break;
 
+				case 'res_card_verification_cc':
+
+					if (! isset($params['order_id'])) $errors[] = 'Order ID not provided';
+					if (! isset($params['data_key']) || '' == $params['data_key']) $errors[] = 'Data key not provided';
+
+					if ($this->gateway()->check_avs()) {
+
+						if (! isset($params['avs_street_number'])) $errors[] = 'Street number not provided';
+						if (! isset($params['avs_street_name'])) $errors[] = 'Street name not provided';
+						if (! isset($params['avs_zipcode'])) $errors[] = 'Zip/postal code not provided';
+
+						//@TODO email is Amex/JCB only...
+						//if (! isset($params['avs_email'])) $errors[] = 'Email not provided';
+
+					}
+
+					if ($this->gateway()->check_cvd()) {
+						if (! isset($params['cvd'])) $errors[] = 'CVD not provided';
+					}
+
+					break;
+
 				case 'res_update_cc':
 					if (! isset($params['data_key']) || '' == $params['data_key']) $errors[] = 'Data key not provided';
 					break;
@@ -315,9 +337,17 @@ class Moneris_Transaction
 		$xml->addChild('api_token', $gateway->api_key());
 
 		$type = $xml->addChild($params['type']);
-		$type_allows_efraud = in_array($params['type'], array('purchase', 'res_purchase_cc', 'preauth', 'card_verification', 'cavv_purchase', 'cavv_preauth'));
+		$type_allows_efraud = in_array($params['type'], array('purchase', 'res_purchase_cc', 'res_add_token', 'preauth', 'res_preauth_cc', 'card_verification', 'res_card_verification_cc', 'cavv_purchase', 'cavv_preauth'));
 		// prevent type from being included below when we all all of the optional params:
 		unset($params['type']);
+
+		$cof = $type->addChild('cof_info');
+		foreach ($params as $key => $value) {
+		    if (substr($key, 0, 4) != 'cof_')
+			continue;
+		    $cof->addChild(substr($key, 4), $value);
+		    unset($params[$key]);
+		}
 
 		if ($gateway->check_cvd() && $type_allows_efraud) {
 			$cvd = $type->addChild('cvd_info');
