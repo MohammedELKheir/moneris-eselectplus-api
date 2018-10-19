@@ -155,7 +155,7 @@ class Moneris_Transaction
 					if (! isset($params['order_id'])) $errors[] = 'Order ID not provided';
 					if (! isset($params['amount'])) $errors[] = 'Amount not provided';
 					break;
-					
+
 				case 'res_card_verification_cc':
 
 					if (! isset($params['order_id'])) $errors[] = 'Order ID not provided';
@@ -177,7 +177,7 @@ class Moneris_Transaction
 					}
 
 					break;
-	
+
 				case 'res_update_cc':
 					if (! isset($params['data_key']) || '' == $params['data_key']) $errors[] = 'Data key not provided';
 					break;
@@ -340,6 +340,14 @@ class Moneris_Transaction
 		$type_allows_efraud = in_array($params['type'], array('purchase', 'res_purchase_cc', 'res_add_token', 'preauth', 'res_preauth_cc', 'card_verification', 'res_card_verification_cc', 'cavv_purchase', 'cavv_preauth'));
 		// prevent type from being included below when we all all of the optional params:
 		unset($params['type']);
+
+		$cof = $type->addChild('cof_info');
+		foreach ($params as $key => $value) {
+		    if (substr($key, 0, 4) != 'cof_')
+			continue;
+		    $cof->addChild(substr($key, 4), $value);
+		    unset($params[$key]);
+		}
 
 		if ($gateway->check_cvd() && $type_allows_efraud) {
 			$cvd = $type->addChild('cvd_info');
