@@ -121,7 +121,7 @@ class Moneris_Gateway
 	 * @param string $order_id Required if first param isn't an instance of Moneris_Transation
 	 * @return void
 	 */
-	public function capture($transaction_number, $order_id = null, $amount = null)
+	public function capture($transaction_number, $issuerId, $paymentInformation, $paymentIndicator, $order_id = null, $amount = null, $customerId = null)
 	{
 		if ($transaction_number instanceof Moneris_Transaction) {
 			$order_id = $transaction_number->order_id();
@@ -131,11 +131,15 @@ class Moneris_Gateway
 		// these have to be in this order!
 		$params = array(
 			'type' => 'completion',
+            'cust_id' => $customerId,
 			'order_id' => $order_id,
 			'comp_amount' => $amount,
 			'txn_number' => $transaction_number,
-			'crypt_type' => 7
-		);
+			'crypt_type' => 7,
+            'cof_issuer_id'=> $issuerId,
+            'cof_payment_information'=> $paymentInformation,
+            'cof_payment_indicator'=> $paymentIndicator
+        );
 
 		$transaction = $this->transaction($params);
 	 	return $this->_process($transaction);
@@ -281,7 +285,7 @@ class Moneris_Gateway
 	 * @param string $order_id Required if first param isn't an instance of Moneris_Transation
 	 * @return void
 	 */
-	public function refund($transaction_number, $order_id = null, $amount = null)
+	public function refund($transaction_number, $issuerId, $paymentInformation, $paymentIndicator, $order_id = null, $amount = null)
 	{
 		if ($transaction_number instanceof Moneris_Transaction) {
 			$order_id = $transaction_number->order_id();
@@ -294,7 +298,10 @@ class Moneris_Gateway
 			'order_id' => $order_id,
 			'amount' => $amount,
 			'txn_number' => $transaction_number,
-			'crypt_type' => 7
+			'crypt_type' => 7,
+            'cof_issuer_id'=> $issuerId,
+            'cof_payment_information'=> $paymentInformation,
+            'cof_payment_indicator'=> $paymentIndicator
 		);
 
 		$transaction = $this->transaction($params);
@@ -476,7 +483,7 @@ class Moneris_Gateway
 	 */
 	public function verify(array $params)
 	{
-		$params['type'] = 'card_verification';
+	        $params['type'] = (isset($params['data_key'])) ? 'res_card_verification_cc' : 'card_verification';
 		$params['crypt_type'] = 7;
 		$transaction = $this->transaction($params);
 	 	return $this->_process($transaction);
